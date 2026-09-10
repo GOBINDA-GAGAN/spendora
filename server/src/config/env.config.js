@@ -7,6 +7,7 @@ const config = {
   mongoUri: process.env.MONGO_URI,
   jwtSecret: process.env.JWT_SECRET,
   nodeEnv: process.env.NODE_ENV || "development",
+  clientUrl: process.env.CLIENT_URL,
   accessTokenSecret: process.env.ACCESS_TOKEN_SECRET,
   refreshTokenSecret: process.env.REFRESH_TOKEN_SECRET,
   accessTokenExpiration: process.env.ACCESS_TOKEN_EXPIRATION || "15m",
