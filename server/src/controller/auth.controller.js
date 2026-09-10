@@ -160,28 +160,32 @@ export const login = async (req, res) => {
       ),
     });
 
-    // 11. Set access token cookie
+    // 11. Cookie configuration
+    const isProduction = process.env.NODE_ENV === "production";
+
+    const cookieOptions = {
+      httpOnly: true,
+      secure: isProduction,
+      sameSite: isProduction ? "none" : "lax",
+      path: "/",
+    };
+
+    // 12. Set access token cookie
     res.cookie("accessToken", accessToken, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "lax",
+      ...cookieOptions,
       maxAge: 15 * 60 * 1000,
-      path: "/",
     });
 
-    // 12. Set refresh token cookie
+    // 13. Set refresh token cookie
     res.cookie("refreshToken", refreshToken, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "lax",
+      ...cookieOptions,
       maxAge: 7 * 24 * 60 * 60 * 1000,
-      path: "/",
     });
 
-    // 13. Return safe user data
+    // 14. Return safe user data
     return res.status(200).json({
+      success: true,
       message: "Login successful",
-
       user: {
         id: user._id,
         name: user.name,
@@ -345,26 +349,30 @@ export const refreshToken = async (req, res) => {
       ),
     });
 
-    // 14. Set new access token cookie
+    // Production cookie configuration
+    const isProduction = process.env.NODE_ENV === "production";
+
+    // 14. Set new access token
     res.cookie("accessToken", newAccessToken, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "lax",
+      secure: isProduction,
+      sameSite: isProduction ? "none" : "lax",
       maxAge: 15 * 60 * 1000,
       path: "/",
     });
 
-    // 15. Set new refresh token cookie
+    // 15. Set new refresh token
     res.cookie("refreshToken", newRefreshToken, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "lax",
+      secure: isProduction,
+      sameSite: isProduction ? "none" : "lax",
       maxAge: 7 * 24 * 60 * 60 * 1000,
-      path: "/auth",
+      path: "/",
     });
 
     // 16. Response
     return res.status(200).json({
+      success: true,
       message: "Token refreshed successfully",
     });
   } catch (error) {

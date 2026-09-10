@@ -13,43 +13,55 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-
   const register = async (userData) => {
-    const response = await api.post(
-      "/auth/register",
-      userData
-    );
-
+    const response = await api.post("/auth/register", userData);
     return response.data;
   };
 
-
   const login = async (credentials) => {
-    const response = await api.post(
-      "/auth/login",
-      credentials
-    );
+    const response = await api.post("/auth/login", credentials);
 
     setUser(response.data.user);
 
     return response.data;
   };
 
-
   const getUser = async () => {
-    try {
-      const response = await api.get("/auth/me");
+    const response = await api.get("/auth/me");
 
-      setUser(response.data.user);
+    setUser(response.data.user);
 
-      return response.data.user;
-    } catch (error) {
-      setUser(null);
-
-      throw error;
-    }
+    return response.data.user;
   };
 
+  const refreshAccessToken = async () => {
+    const response = await api.post("/auth/refresh-token");
+
+    return response.data;
+  };
+
+  const checkAuth = async () => {
+    try {
+      // First try existing access token
+      await getUser();
+    } catch (error) {
+      // Access token may be expired
+      if (error?.response?.status === 401) {
+        try {
+          // Try refresh token
+          await refreshAccessToken();
+
+          // Get user again with new access token
+          await getUser();
+        } catch (refreshError) {
+          // Refresh token is also invalid/expired
+          setUser(null);
+        }
+      } else {
+        setUser(null);
+      }
+    }
+  };
 
   const logout = async () => {
     try {
@@ -59,22 +71,16 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-
-
   useEffect(() => {
-    const checkAuth = async () => {
+    const initializeAuth = async () => {
       try {
-        await getUser();
-      } catch (error) {
-        // User is not authenticated.
-        // This is expected when no valid cookie exists.
-        setUser(null);
+        await checkAuth();
       } finally {
         setLoading(false);
       }
     };
 
-    checkAuth();
+    initializeAuth();
   }, []);
 
   return (
@@ -85,6 +91,7 @@ export const AuthProvider = ({ children }) => {
         register,
         login,
         getUser,
+        refreshAccessToken,
         logout,
         isAuthenticated: !!user,
       }}
