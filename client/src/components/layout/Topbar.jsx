@@ -1,5 +1,9 @@
 import React from "react";
-import { Bell, Search, Wallet } from "lucide-react";
+import {
+  Bell,
+  Search,
+  Wallet,
+} from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
 
 const Topbar = () => {
@@ -13,10 +17,7 @@ const Topbar = () => {
           {/* Mobile Logo */}
           <div className="flex items-center gap-2.5 md:hidden">
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground shadow-sm">
-              <Wallet
-                size={16}
-                strokeWidth={2.2}
-              />
+              <Wallet size={16} strokeWidth={2.2} />
             </div>
 
             <span className="text-sm font-semibold tracking-[-0.02em] text-foreground">
@@ -24,7 +25,7 @@ const Topbar = () => {
             </span>
           </div>
 
-          {/* Tablet/Desktop title */}
+          {/* Tablet/Desktop Title */}
           <div className="hidden min-w-0 md:block">
             <p className="truncate text-sm font-semibold text-foreground">
               Dashboard
@@ -56,7 +57,7 @@ const Topbar = () => {
 
         {/* Right */}
         <div className="flex items-center gap-1.5 sm:gap-2">
-          {/* Mobile search */}
+          {/* Mobile Search */}
           <button
             type="button"
             className="rounded-lg p-2 text-secondary transition-colors hover:bg-card-secondary hover:text-foreground md:hidden"
@@ -71,25 +72,21 @@ const Topbar = () => {
             className="relative rounded-lg p-2 text-secondary transition-colors hover:bg-card-secondary hover:text-foreground"
             aria-label="Notifications"
           >
-            <Bell
-              size={18}
-              strokeWidth={1.8}
-            />
+            <Bell size={18} strokeWidth={1.8} />
 
             <span className="absolute right-1.5 top-1.5 h-1.5 w-1.5 rounded-full bg-danger ring-2 ring-background" />
           </button>
 
+          {/* Divider */}
           <div className="mx-1 hidden h-6 w-px bg-border sm:block" />
 
-          {/* User */}
+          {/* User - Hidden on Mobile */}
           <button
             type="button"
-            className="group flex items-center gap-2 rounded-lg p-1.5 transition-colors hover:bg-card-secondary"
+            className="group hidden items-center gap-2 rounded-lg p-1.5 transition-colors hover:bg-card-secondary sm:flex"
           >
             <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary text-[11px] font-semibold text-primary-foreground">
-              {user?.name
-                ?.charAt(0)
-                ?.toUpperCase() || "U"}
+              {user?.name?.charAt(0)?.toUpperCase() || "U"}
             </div>
 
             <div className="hidden min-w-0 text-left sm:block">
