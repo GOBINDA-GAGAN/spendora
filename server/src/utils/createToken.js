@@ -1,5 +1,7 @@
 import config from "../config/env.config.js";
 import jwt from "jsonwebtoken";
+import crypto from "crypto";
+
 
 export const createAccessToken = (payload) => {
 
@@ -8,10 +10,17 @@ export const createAccessToken = (payload) => {
 }
 
 export const createRefreshToken = (payload) => {
-
-    const token = jwt.sign(payload, config.refreshTokenSecret, { expiresIn: config.refreshTokenExpiration });
-    return token;
-}
+  return jwt.sign(
+    {
+      ...payload,
+      jti: crypto.randomUUID(),
+    },
+    config.refreshTokenSecret,
+    {
+      expiresIn: config.refreshTokenExpiration,
+    }
+  );
+};
 
 export const verifyAccessToken = (token) => {
     try {
