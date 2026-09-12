@@ -234,6 +234,8 @@ export const profile = async (req, res) => {
 
     // 4. Find user
     const user = await User.findById(userId).select("-password");
+    console.log(user);
+    
 
     if (!user) {
       return res.status(404).json({
@@ -244,13 +246,8 @@ export const profile = async (req, res) => {
     // 5. Return profile
     return res.status(200).json({
       message: "Profile retrieved successfully",
-
-      user: {
-        id: user._id,
-        name: user.name,
-        email: user.email,
-        role: user.role,
-      },
+      user
+      
     });
   } catch (error) {
     console.error("Profile error:", error);

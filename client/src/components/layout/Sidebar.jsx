@@ -218,7 +218,7 @@ const Sidebar = ({ collapsed, setCollapsed }) => {
           )}
 
           <NavLink
-            to="/profile"
+            to="/profile/me"
             title={
               collapsed ? "Profile" : undefined
             }

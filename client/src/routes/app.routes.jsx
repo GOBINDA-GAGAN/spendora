@@ -73,7 +73,7 @@ const router = createBrowserRouter([
             element: <NewExpenses />,
           },
           {
-            path: "/profile",
+            path: "/profile/me",
             element: <Profile />,
           },
           {

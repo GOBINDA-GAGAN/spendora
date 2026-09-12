@@ -16,13 +16,15 @@ import {
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { useAuth } from "../../../context/AuthContext";
-
+import { updateProfile } from "../../../api/user.api";
+import { useNavigate } from "react-router-dom";
 
 const Profile = () => {
   const { user } = useAuth();
 
   const [editing, setEditing] = useState(false);
   const [passwordOpen, setPasswordOpen] = useState(false);
+  const navigate = useNavigate();
 
   const initial = user?.name?.charAt(0)?.toUpperCase() || "U";
 
@@ -40,7 +42,7 @@ const Profile = () => {
     defaultValues: {
       name: user?.name || "",
       email: user?.email || "",
-      whatsapp: user?.whatsapp || "",
+      mobileNumber: user?.mobileNumber || "",
       address: user?.address || "",
       city: user?.city || "",
       state: user?.state || "",
@@ -57,10 +59,7 @@ const Profile = () => {
     handleSubmit: handlePasswordSubmit,
     reset: resetPassword,
     watch,
-    formState: {
-      errors: passwordErrors,
-      isSubmitting: passwordSubmitting,
-    },
+    formState: { errors: passwordErrors, isSubmitting: passwordSubmitting },
   } = useForm({
     mode: "onBlur",
   });
@@ -72,6 +71,7 @@ const Profile = () => {
   -------------------------------- */
 
   const handleEdit = () => {
+    navigate("/profile/me?update_profile=true");
     setEditing(true);
   };
 
@@ -83,7 +83,7 @@ const Profile = () => {
     reset({
       name: user?.name || "",
       email: user?.email || "",
-      whatsapp: user?.whatsapp || "",
+      mobileNumber: user?.mobileNumber || "",
       address: user?.address || "",
       city: user?.city || "",
       state: user?.state || "",
@@ -99,13 +99,7 @@ const Profile = () => {
 
   const onProfileSubmit = async (data) => {
     try {
-      /*
-        API WILL BE CONNECTED LATER
-
-        Example:
-
-        await api.patch("/auth/profile", data);
-      */
+      await updateProfile(data);
 
       console.log("Profile data:", data);
 
@@ -120,7 +114,7 @@ const Profile = () => {
 
       toast.error(
         error?.response?.data?.message ||
-          "Something went wrong. Please try again."
+          "Something went wrong. Please try again.",
       );
     }
   };
@@ -155,8 +149,7 @@ const Profile = () => {
       console.error(error);
 
       toast.error(
-        error?.response?.data?.message ||
-          "Unable to change password."
+        error?.response?.data?.message || "Unable to change password.",
       );
     }
   };
@@ -303,14 +296,12 @@ const Profile = () => {
 
                   minLength: {
                     value: 2,
-                    message:
-                      "Name must contain at least 2 characters",
+                    message: "Name must contain at least 2 characters",
                   },
 
                   maxLength: {
                     value: 50,
-                    message:
-                      "Name cannot exceed 50 characters",
+                    message: "Name cannot exceed 50 characters",
                   },
                 })}
               />
@@ -319,15 +310,14 @@ const Profile = () => {
                 label="Email address"
                 type="email"
                 icon={<Mail size={14} />}
-                disabled={!editing}
+                disabled
                 error={errors.email?.message}
                 {...register("email", {
                   required: "Email is required",
 
                   pattern: {
                     value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-                    message:
-                      "Enter a valid email address",
+                    message: "Enter a valid email address",
                   },
                 })}
               />
@@ -340,11 +330,10 @@ const Profile = () => {
                 placeholder="+91 98765 43210"
                 disabled={!editing}
                 error={errors.whatsapp?.message}
-                {...register("whatsapp", {
+                {...register("mobileNumber", {
                   pattern: {
                     value: /^[0-9+\-\s()]{8,20}$/,
-                    message:
-                      "Enter a valid WhatsApp number",
+                    message: "Enter a valid WhatsApp number",
                   },
                 })}
               />
@@ -360,8 +349,7 @@ const Profile = () => {
                 {...register("country", {
                   maxLength: {
                     value: 50,
-                    message:
-                      "Country name cannot exceed 50 characters",
+                    message: "Country name cannot exceed 50 characters",
                   },
                 })}
               />
@@ -381,8 +369,7 @@ const Profile = () => {
                 {...register("address", {
                   maxLength: {
                     value: 200,
-                    message:
-                      "Address cannot exceed 200 characters",
+                    message: "Address cannot exceed 200 characters",
                   },
                 })}
               />
@@ -402,8 +389,7 @@ const Profile = () => {
                 {...register("city", {
                   maxLength: {
                     value: 50,
-                    message:
-                      "City name cannot exceed 50 characters",
+                    message: "City name cannot exceed 50 characters",
                   },
                 })}
               />
@@ -417,8 +403,7 @@ const Profile = () => {
                 {...register("state", {
                   maxLength: {
                     value: 50,
-                    message:
-                      "State name cannot exceed 50 characters",
+                    message: "State name cannot exceed 50 characters",
                   },
                 })}
               />
@@ -428,8 +413,8 @@ const Profile = () => {
 
             {editing && (
               <p className="mt-4 text-[10px] text-muted">
-                Keep your contact information up to date for
-                important Spendora notifications.
+                Keep your contact information up to date for important Spendora
+                notifications.
               </p>
             )}
           </form>
@@ -473,19 +458,12 @@ const Profile = () => {
               </div>
 
               <div className="flex-1">
-                <p className="text-xs font-medium text-foreground">
-                  Password
-                </p>
+                <p className="text-xs font-medium text-foreground">Password</p>
 
-                <p className="text-[10px] text-muted">
-                  Change your password
-                </p>
+                <p className="text-[10px] text-muted">Change your password</p>
               </div>
 
-              <ChevronRight
-                size={15}
-                className="text-muted"
-              />
+              <ChevronRight size={15} className="text-muted" />
             </button>
 
             {/* WhatsApp */}
@@ -494,16 +472,8 @@ const Profile = () => {
               icon={<Phone size={15} />}
               iconClass="bg-success-muted text-success"
               title="WhatsApp"
-              description={
-                user?.whatsapp
-                  ? "Connected"
-                  : "Add your WhatsApp"
-              }
-              descriptionClass={
-                user?.whatsapp
-                  ? "text-success"
-                  : "text-muted"
-              }
+              description={user?.whatsapp ? "Connected" : "Add your WhatsApp"}
+              descriptionClass={user?.whatsapp ? "text-success" : "text-muted"}
             />
           </div>
         </section>
@@ -544,21 +514,16 @@ const Profile = () => {
             {/* Password Form */}
 
             <form
-              onSubmit={handlePasswordSubmit(
-                onPasswordSubmit
-              )}
+              onSubmit={handlePasswordSubmit(onPasswordSubmit)}
               className="space-y-4 p-5"
             >
               <FormInput
                 label="Current password"
                 type="password"
                 icon={<Lock size={14} />}
-                error={
-                  passwordErrors.currentPassword?.message
-                }
+                error={passwordErrors.currentPassword?.message}
                 {...registerPassword("currentPassword", {
-                  required:
-                    "Current password is required",
+                  required: "Current password is required",
                 })}
               />
 
@@ -572,8 +537,7 @@ const Profile = () => {
 
                   minLength: {
                     value: 8,
-                    message:
-                      "Password must contain at least 8 characters",
+                    message: "Password must contain at least 8 characters",
                   },
                 })}
               />
@@ -582,16 +546,12 @@ const Profile = () => {
                 label="Confirm new password"
                 type="password"
                 icon={<Lock size={14} />}
-                error={
-                  passwordErrors.confirmPassword?.message
-                }
+                error={passwordErrors.confirmPassword?.message}
                 {...registerPassword("confirmPassword", {
-                  required:
-                    "Please confirm your password",
+                  required: "Please confirm your password",
 
                   validate: (value) =>
-                    value === newPassword ||
-                    "Passwords do not match",
+                    value === newPassword || "Passwords do not match",
                 })}
               />
 
@@ -600,9 +560,7 @@ const Profile = () => {
                 disabled={passwordSubmitting}
                 className="btn-primary h-10 w-full rounded-lg text-xs font-medium disabled:opacity-50"
               >
-                {passwordSubmitting
-                  ? "Updating..."
-                  : "Update password"}
+                {passwordSubmitting ? "Updating..." : "Update password"}
               </button>
             </form>
           </div>
@@ -627,7 +585,7 @@ const FormInput = React.forwardRef(
       placeholder,
       ...props
     },
-    ref
+    ref,
   ) => {
     const addText = `Add your ${label.toLowerCase()}`;
 
@@ -646,9 +604,7 @@ const FormInput = React.forwardRef(
 
           <span
             className={`absolute left-3 top-1/2 z-10 -translate-y-1/2 ${
-              disabled
-                ? "text-muted"
-                : "text-secondary"
+              disabled ? "text-muted" : "text-secondary"
             }`}
           >
             {icon}
@@ -660,11 +616,7 @@ const FormInput = React.forwardRef(
             ref={ref}
             type={type}
             disabled={disabled}
-            placeholder={
-              disabled
-                ? addText
-                : placeholder || addText
-            }
+            placeholder={disabled ? addText : placeholder || addText}
             {...props}
             className={`h-10 w-full rounded-lg border bg-card-secondary pl-9 pr-3 text-xs outline-none transition placeholder:text-muted ${
               error
@@ -672,28 +624,18 @@ const FormInput = React.forwardRef(
                 : disabled
                   ? "border-border"
                   : "border-border focus:border-primary focus:ring-2 focus:ring-primary/10"
-            } ${
-              disabled
-                ? "cursor-default opacity-100"
-                : "cursor-text"
-            } ${
-              error
-                ? "text-danger"
-                : "text-foreground"
+            } ${disabled ? "cursor-default opacity-100" : "cursor-text"} ${
+              error ? "text-danger" : "text-foreground"
             }`}
           />
         </div>
 
         {/* Error */}
 
-        {error && (
-          <p className="mt-1 text-[10px] text-danger">
-            {error}
-          </p>
-        )}
+        {error && <p className="mt-1 text-[10px] text-danger">{error}</p>}
       </div>
     );
-  }
+  },
 );
 
 FormInput.displayName = "FormInput";
@@ -717,15 +659,9 @@ const StatusItem = ({
     </div>
 
     <div className="flex-1">
-      <p className="text-xs font-medium text-foreground">
-        {title}
-      </p>
+      <p className="text-xs font-medium text-foreground">{title}</p>
 
-      <p
-        className={`text-[10px] ${descriptionClass}`}
-      >
-        {description}
-      </p>
+      <p className={`text-[10px] ${descriptionClass}`}>{description}</p>
     </div>
   </div>
 );
