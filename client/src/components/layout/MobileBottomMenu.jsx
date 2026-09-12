@@ -842,7 +842,7 @@ const MobileBottomMenu = () => {
               <MoreItem
                 icon={UserRound}
                 label="Profile"
-                path="/profile"
+                path="/profile/me"
                 onClick={() =>
                   setMoreOpen(false)
                 }
