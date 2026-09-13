@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   CalendarDays,
@@ -16,6 +16,7 @@ import {
   Wallet,
   X,
 } from "lucide-react";
+import { useTransaction } from "../../../context/TransactionContext";
 
 const initialTransactions = [
   {
@@ -247,7 +248,7 @@ const formatDate = (date) =>
   }).format(new Date(date));
 
 const Transactions = () => {
-  const [transactions, setTransactions] = useState(initialTransactions);
+  // const [transactions, setTransactions] = useState(initialTransactions);
 
   const [search, setSearch] = useState("");
   const [type, setType] = useState("all");
@@ -259,7 +260,16 @@ const Transactions = () => {
 
   const navigate = useNavigate();
 
-  const itemsPerPage = 8;
+  const { transactions, getTransactions, setTransactions } = useTransaction();
+
+  const itemsPerPage = 10;
+
+  useEffect(() => {
+    getTransactions({
+      page: 1,
+      limit: 20,
+    });
+  }, []);
 
   /* =========================================
      FILTER
@@ -791,7 +801,7 @@ const CategoryImage = ({ transaction }) => {
       } bg-card-secondary shadow-sm`}
     >
       <img
-        src={transaction.image}
+        src={transaction.image || <X/>}
         alt={transaction.category}
         onError={() => setImageError(true)}
         className="h-full w-full object-cover transition duration-300 group-hover:scale-110"

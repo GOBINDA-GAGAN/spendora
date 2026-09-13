@@ -12,7 +12,7 @@ const AuthContext = createContext(null);
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
-
+ 
   const register = async (userData) => {
     const response = await api.post("/auth/register", userData);
     return response.data;

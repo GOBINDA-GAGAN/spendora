@@ -4,6 +4,7 @@ import cookieParser from "cookie-parser";
 import config from "../config/env.config.js";
 import cors from "cors";
 import userRoute from "../router/user.route.js";
+import transactionRoute from "../router/transaction.route.js";
 
 
 
@@ -31,6 +32,7 @@ app.get("/", (req, res) => {
 
 app.use("/api/auth", authRouter);
 app.use('/api/user',userRoute)
+app.use('/api/transactions',transactionRoute)
 
 
 export default app;

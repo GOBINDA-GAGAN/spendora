@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import {
   Banknote,
@@ -26,27 +26,108 @@ import {
   Loader2,
   AlertCircle,
 } from "lucide-react";
+import { useTransaction } from "../../../context/TransactionContext";
 
 const expenseDefaults = [
-  { name: "Food", icon: Utensils, color: "bg-orange-50 text-orange-600", active: "border-orange-200 bg-orange-50" },
-  { name: "Shopping", icon: ShoppingBag, color: "bg-pink-50 text-pink-600", active: "border-pink-200 bg-pink-50" },
-  { name: "Transport", icon: Car, color: "bg-blue-50 text-blue-600", active: "border-blue-200 bg-blue-50" },
-  { name: "Bills", icon: Receipt, color: "bg-yellow-50 text-yellow-600", active: "border-yellow-200 bg-yellow-50" },
-  { name: "Entertainment", icon: Film, color: "bg-purple-50 text-purple-600", active: "border-purple-200 bg-purple-50" },
-  { name: "Housing", icon: Home, color: "bg-cyan-50 text-cyan-600", active: "border-cyan-200 bg-cyan-50" },
-  { name: "Health", icon: HeartPulse, color: "bg-rose-50 text-rose-600", active: "border-rose-200 bg-rose-50" },
-  { name: "Mobile", icon: Smartphone, color: "bg-indigo-50 text-indigo-600", active: "border-indigo-200 bg-indigo-50" },
-  { name: "Coffee", icon: Coffee, color: "bg-amber-50 text-amber-700", active: "border-amber-200 bg-amber-50" },
-  { name: "Other", icon: MoreHorizontal, color: "bg-slate-50 text-slate-600", active: "border-slate-200 bg-slate-50" },
+  {
+    name: "Food",
+    icon: Utensils,
+    color: "bg-orange-50 text-orange-600",
+    active: "border-orange-200 bg-orange-50",
+  },
+  {
+    name: "Shopping",
+    icon: ShoppingBag,
+    color: "bg-pink-50 text-pink-600",
+    active: "border-pink-200 bg-pink-50",
+  },
+  {
+    name: "Transport",
+    icon: Car,
+    color: "bg-blue-50 text-blue-600",
+    active: "border-blue-200 bg-blue-50",
+  },
+  {
+    name: "Bills",
+    icon: Receipt,
+    color: "bg-yellow-50 text-yellow-600",
+    active: "border-yellow-200 bg-yellow-50",
+  },
+  {
+    name: "Entertainment",
+    icon: Film,
+    color: "bg-purple-50 text-purple-600",
+    active: "border-purple-200 bg-purple-50",
+  },
+  {
+    name: "Housing",
+    icon: Home,
+    color: "bg-cyan-50 text-cyan-600",
+    active: "border-cyan-200 bg-cyan-50",
+  },
+  {
+    name: "Health",
+    icon: HeartPulse,
+    color: "bg-rose-50 text-rose-600",
+    active: "border-rose-200 bg-rose-50",
+  },
+  {
+    name: "Mobile",
+    icon: Smartphone,
+    color: "bg-indigo-50 text-indigo-600",
+    active: "border-indigo-200 bg-indigo-50",
+  },
+  {
+    name: "Coffee",
+    icon: Coffee,
+    color: "bg-amber-50 text-amber-700",
+    active: "border-amber-200 bg-amber-50",
+  },
+  {
+    name: "Other",
+    icon: MoreHorizontal,
+    color: "bg-slate-50 text-slate-600",
+    active: "border-slate-200 bg-slate-50",
+  },
 ];
 
 const incomeDefaults = [
-  { name: "Salary", icon: Banknote, color: "bg-emerald-50 text-emerald-600", active: "border-emerald-200 bg-emerald-50" },
-  { name: "Freelance", icon: BriefcaseBusiness, color: "bg-blue-50 text-blue-600", active: "border-blue-200 bg-blue-50" },
-  { name: "Investment", icon: Wallet, color: "bg-violet-50 text-violet-600", active: "border-violet-200 bg-violet-50" },
-  { name: "Bonus", icon: Gift, color: "bg-amber-50 text-amber-600", active: "border-amber-200 bg-amber-50" },
-  { name: "Business", icon: Building2, color: "bg-cyan-50 text-cyan-600", active: "border-cyan-200 bg-cyan-50" },
-  { name: "Other", icon: MoreHorizontal, color: "bg-slate-50 text-slate-600", active: "border-slate-200 bg-slate-50" },
+  {
+    name: "Salary",
+    icon: Banknote,
+    color: "bg-emerald-50 text-emerald-600",
+    active: "border-emerald-200 bg-emerald-50",
+  },
+  {
+    name: "Freelance",
+    icon: BriefcaseBusiness,
+    color: "bg-blue-50 text-blue-600",
+    active: "border-blue-200 bg-blue-50",
+  },
+  {
+    name: "Investment",
+    icon: Wallet,
+    color: "bg-violet-50 text-violet-600",
+    active: "border-violet-200 bg-violet-50",
+  },
+  {
+    name: "Bonus",
+    icon: Gift,
+    color: "bg-amber-50 text-amber-600",
+    active: "border-amber-200 bg-amber-50",
+  },
+  {
+    name: "Business",
+    icon: Building2,
+    color: "bg-cyan-50 text-cyan-600",
+    active: "border-cyan-200 bg-cyan-50",
+  },
+  {
+    name: "Other",
+    icon: MoreHorizontal,
+    color: "bg-slate-50 text-slate-600",
+    active: "border-slate-200 bg-slate-50",
+  },
 ];
 
 const iconOptions = [
@@ -66,24 +147,20 @@ const iconOptions = [
 
 const categoryColors = [
   { color: "bg-blue-50 text-blue-600", active: "border-blue-200 bg-blue-50" },
-  { color: "bg-purple-50 text-purple-600", active: "border-purple-200 bg-purple-50" },
-  { color: "bg-emerald-50 text-emerald-600", active: "border-emerald-200 bg-emerald-50" },
-  { color: "bg-orange-50 text-orange-600", active: "border-orange-200 bg-orange-50" },
+  {
+    color: "bg-purple-50 text-purple-600",
+    active: "border-purple-200 bg-purple-50",
+  },
+  {
+    color: "bg-emerald-50 text-emerald-600",
+    active: "border-emerald-200 bg-emerald-50",
+  },
+  {
+    color: "bg-orange-50 text-orange-600",
+    active: "border-orange-200 bg-orange-50",
+  },
   { color: "bg-pink-50 text-pink-600", active: "border-pink-200 bg-pink-50" },
   { color: "bg-cyan-50 text-cyan-600", active: "border-cyan-200 bg-cyan-50" },
-];
-
-const recentTransactions = [
-  { id: 1, title: "Monthly Salary", category: "Salary", type: "income", amount: 65000, date: "Sep 10", icon: Banknote, color: "bg-emerald-50 text-emerald-600" },
-  { id: 2, title: "Amazon Shopping", category: "Shopping", type: "expense", amount: 2499, date: "Sep 10", icon: ShoppingBag, color: "bg-pink-50 text-pink-600" },
-  { id: 3, title: "Lunch", category: "Food", type: "expense", amount: 420, date: "Sep 09", icon: Utensils, color: "bg-orange-50 text-orange-600" },
-  { id: 4, title: "Freelance Project", category: "Freelance", type: "income", amount: 12000, date: "Sep 09", icon: BriefcaseBusiness, color: "bg-blue-50 text-blue-600" },
-  { id: 5, title: "Netflix", category: "Entertainment", type: "expense", amount: 649, date: "Sep 08", icon: Film, color: "bg-purple-50 text-purple-600" },
-  { id: 6, title: "Uber Ride", category: "Transport", type: "expense", amount: 380, date: "Sep 08", icon: Car, color: "bg-blue-50 text-blue-600" },
-  { id: 7, title: "Electricity Bill", category: "Bills", type: "expense", amount: 1850, date: "Sep 07", icon: Receipt, color: "bg-yellow-50 text-yellow-600" },
-  { id: 8, title: "Stock Dividend", category: "Investment", type: "income", amount: 3200, date: "Sep 06", icon: Wallet, color: "bg-violet-50 text-violet-600" },
-  { id: 9, title: "Apartment Rent", category: "Housing", type: "expense", amount: 15000, date: "Sep 05", icon: Home, color: "bg-cyan-50 text-cyan-600" },
-  { id: 10, title: "Pharmacy", category: "Health", type: "expense", amount: 760, date: "Sep 04", icon: HeartPulse, color: "bg-rose-50 text-rose-600" },
 ];
 
 const NewExpense = () => {
@@ -96,6 +173,15 @@ const NewExpense = () => {
   const [showCategoryModal, setShowCategoryModal] = useState(false);
   const [newCategoryIcon, setNewCategoryIcon] = useState(0);
   const [apiError, setApiError] = useState("");
+
+  const { createTransaction, transactions, getTransactions } = useTransaction();
+
+  useEffect(() => {
+    getTransactions({
+      page: 1,
+      limit: 10,
+    });
+  }, []);
 
   const {
     register,
@@ -116,10 +202,7 @@ const NewExpense = () => {
     register: registerCategory,
     handleSubmit: handleCategorySubmit,
     reset: resetCategory,
-    formState: {
-      errors: categoryErrors,
-      isSubmitting: isCategorySubmitting,
-    },
+    formState: { errors: categoryErrors, isSubmitting: isCategorySubmitting },
   } = useForm({
     defaultValues: {
       name: "",
@@ -143,7 +226,7 @@ const NewExpense = () => {
    * CREATE TRANSACTION API
    * ================================
    */
-  const createTransaction = async (data) => {
+  const submitTransaction = async (data) => {
     setApiError("");
 
     try {
@@ -154,15 +237,10 @@ const NewExpense = () => {
         amount: Number(data.amount),
       };
 
-      // your api call here
-      // const response = await api.post("/transactions", payload);
+      const response = await createTransaction(payload);
+      toast.success(response?.message || "Transaction create successful");
 
       console.log("CREATE TRANSACTION:", payload);
-
-      // Example:
-      // if (!response.data.success) {
-      //   throw new Error(response.data.message);
-      // }
 
       reset();
       setCategory(type === "expense" ? "Food" : "Salary");
@@ -170,7 +248,7 @@ const NewExpense = () => {
       setApiError(
         error?.response?.data?.message ||
           error?.message ||
-          "Unable to create transaction."
+          "Unable to create transaction.",
       );
     }
   };
@@ -187,7 +265,7 @@ const NewExpense = () => {
       const name = data.name.trim();
 
       const exists = categories.some(
-        (item) => item.name.toLowerCase() === name.toLowerCase()
+        (item) => item.name.toLowerCase() === name.toLowerCase(),
       );
 
       if (exists) {
@@ -240,7 +318,7 @@ const NewExpense = () => {
       setApiError(
         error?.response?.data?.message ||
           error?.message ||
-          "Unable to create category."
+          "Unable to create category.",
       );
     }
   };
@@ -292,7 +370,7 @@ const NewExpense = () => {
       <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_360px]">
         {/* Form */}
         <form
-          onSubmit={handleSubmit(createTransaction)}
+          onSubmit={handleSubmit(submitTransaction)}
           className="card p-3.5 sm:p-5"
         >
           {/* Tabs */}
@@ -363,9 +441,7 @@ const NewExpense = () => {
           {/* Categories */}
           <div className="mt-4">
             <div className="mb-2.5 flex items-center justify-between">
-              <p className="text-xs font-semibold text-foreground">
-                Category
-              </p>
+              <p className="text-xs font-semibold text-foreground">Category</p>
 
               <button
                 type="button"
@@ -430,10 +506,7 @@ const NewExpense = () => {
 
           {/* Details */}
           <div className="mt-4 grid gap-3 sm:grid-cols-2">
-            <FormField
-              label="Title"
-              error={errors.title?.message}
-            >
+            <FormField label="Title" error={errors.title?.message}>
               <input
                 {...register("title", {
                   required: "Title is required",
@@ -451,10 +524,7 @@ const NewExpense = () => {
               />
             </FormField>
 
-            <FormField
-              label="Date"
-              error={errors.date?.message}
-            >
+            <FormField label="Date" error={errors.date?.message}>
               <div className="relative">
                 <CalendarDays
                   size={14}
@@ -518,14 +588,10 @@ const NewExpense = () => {
               type="submit"
               disabled={isSubmitting}
               className={`flex h-9 flex-1 items-center justify-center gap-2 rounded-lg px-5 text-xs font-medium text-white disabled:cursor-not-allowed disabled:opacity-60 sm:flex-none ${
-                type === "income"
-                  ? "bg-success"
-                  : "bg-danger"
+                type === "income" ? "bg-success" : "bg-danger"
               }`}
             >
-              {isSubmitting && (
-                <Loader2 size={14} className="animate-spin" />
-              )}
+              {isSubmitting && <Loader2 size={14} className="animate-spin" />}
 
               {isSubmitting
                 ? "Saving..."
@@ -551,18 +617,14 @@ const NewExpense = () => {
           </div>
 
           <div className="divide-y divide-border">
-            {recentTransactions.map((transaction) => {
-              const Icon = transaction.icon;
-
+            {transactions.map((transaction) => {
               return (
                 <div
-                  key={transaction.id}
+                  key={transaction._id}
                   className="flex items-center gap-2.5 px-4 py-2.5 hover:bg-card-hover"
                 >
-                  <div
-                    className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg ${transaction.color}`}
-                  >
-                    <Icon size={14} />
+                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-muted">
+                    <span className="text-xs">₹</span>
                   </div>
 
                   <div className="min-w-0 flex-1">
@@ -583,7 +645,7 @@ const NewExpense = () => {
                     }`}
                   >
                     {transaction.type === "income" ? "+" : "-"}₹
-                    {transaction.amount.toLocaleString("en-IN")}
+                    {Number(transaction.amount).toLocaleString("en-IN")}
                   </p>
                 </div>
               );
@@ -754,9 +816,7 @@ const FormField = ({ label, error, children }) => (
     {children}
 
     {error && (
-      <span className="mt-1 block text-[9px] text-danger">
-        {error}
-      </span>
+      <span className="mt-1 block text-[9px] text-danger">{error}</span>
     )}
   </label>
 );

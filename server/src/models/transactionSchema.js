@@ -11,7 +11,7 @@ const transactionSchema = new mongoose.Schema(
 
     type: {
       type: String,
-      enum: ["expense", "income", "transfer"],
+      enum: ["expense", "income"],
       required: true,
     },
 
@@ -21,35 +21,20 @@ const transactionSchema = new mongoose.Schema(
       min: 0,
     },
 
-    categoryId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Category",
+    category: {
+      type: String,
       default: null,
     },
-
-    accountId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Account",
-      required: true,
-    },
-
-    // Used only for transfers
-    toAccountId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Account",
-      default: null,
-    },
-
-    description: {
+    title: {
       type: String,
       trim: true,
       maxlength: 200,
     },
 
-    paymentMethod: {
+    paymentAccount: {
       type: String,
-      enum: ["cash", "upi", "debit_card", "credit_card", "bank_transfer", "other"],
-      default: "cash",
+      enum: ["Cash","Bank account","Upi","Cradit card","Wallet"],
+      default: "Cash",
     },
 
     date: {
@@ -58,22 +43,10 @@ const transactionSchema = new mongoose.Schema(
       default: Date.now,
     },
 
-    notes: {
+    note: {
       type: String,
       trim: true,
       maxlength: 500,
-    },
-
-    tags: [
-      {
-        type: String,
-        trim: true,
-      },
-    ],
-
-    isRecurring: {
-      type: Boolean,
-      default: false,
     },
   },
   {

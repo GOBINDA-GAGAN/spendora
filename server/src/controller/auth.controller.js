@@ -219,6 +219,8 @@ export const profile = async (req, res) => {
 
     const accessToken = req.cookies.accessToken;
 
+    const userIds=req.user;
+
     // 1. Check token
     if (!accessToken) {
       return res.status(401).json({
@@ -234,7 +236,7 @@ export const profile = async (req, res) => {
 
     // 4. Find user
     const user = await User.findById(userId).select("-password");
-    console.log(user);
+   
     
 
     if (!user) {
