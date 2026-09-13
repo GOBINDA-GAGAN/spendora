@@ -3,7 +3,6 @@ import Transaction from "../models/transactionSchema.js";
 export const createTransaction = async (req, res) => {
   try {
     const { account, amount, category, date, note, title, type } = req.body;
-    console.log("ff", req.user.id);
 
     // Basic validation
     if (!account || !amount || !category || !date || !title || !type) {
